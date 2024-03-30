@@ -1,0 +1,16 @@
+from flask import Flask, render_template,request
+import mysql.connector
+
+
+app = Flask(__name__)
+app.config['DEBUG']
+
+
+@app.route("/")
+def homepage():
+    return render_template('index.html')
+@app.route("/AdminLogin")
+def AdminLogin():
+    return render_template('AdminLogin.html')
+@app.route("/NewUser")
+de

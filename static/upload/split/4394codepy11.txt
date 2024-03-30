@@ -1,0 +1,16 @@
+ALUES ('" + name  + "','" + Fname + "','" + gender + "','" + uname + "','" + passwo + "') ")
+        conn.commit()
+        conn.close()
+        # return 'file register successfully'
+        return render_template('UserLogin.html')
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True, use_reloader=Tr

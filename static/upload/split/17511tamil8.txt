@@ -1,0 +1,187 @@
+from flask import Flask, render_template, flash, request, session,send_file
+from flask import render_template, redirect, url_for, request
+#from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
+from werkzeug.utils import secure_filename
+import datetime
+import mysql.connector
+
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
+nltk.download('stopwords')
+
+import sys
+app = Flask(__name__)
+app.config['DEBUG']
+app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
+
+@app.route("/")fgjytgiyupui
+def homepage():
+    return render_template('index.html')
+uipui
+@app.route("/AdminLogin")
+def AdminLogin():
+    return render_template('AdminLogin.html')
+@app.route("/UserLogin")
+def UserLogin():
+    return render_template('UserLogin.html')
+@app.route("/NewUser")
+def NewUser():
+    return render_template('NewUser.html')
+@app.route("/AdminHome")uipuip
+def AdminHome():
+uipui
+    conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+    # cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM regtb ")
+    data = cur.fetchall()
+    return render_template('AdminHome.html', data=data)
+
+
+@app.route("/NewProduct")
+def NewProduct():
+
+    conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+    # cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM protb ")
+    data = cur.fetchall()
+    return render_template('NewProduct.html', data=data)
+
+
+@app.route("/AProductInfo")
+def AProductInfo():
+
+    conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+    # cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM protb ")
+    data = cur.fetchall()
+    return render_template('AProductInfo.html', data=data)
+
+@app.route("/adminlogin", methods=['GET', 'POST'])
+def adminlogin():
+    error = None
+    if request.method == 'POST':
+       if request.form['uname'] == 'admin' and request.form['password'] == 'admin':
+
+           conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+           # cursor = conn.cursor()
+           cur = conn.cursor()
+           cur.execute("SELECT * FROM regtb ")
+           data = cur.fetchall()
+           return render_template('AdminHome.html', data=data)
+
+       else:
+
+           alert = 'Username or Password is wrong'
+           return render_template('goback.html', data=alert)
+
+
+@app.route("/newproduct1", methods=['GET', 'POST'])
+def newproduct1():
+    if request.method == 'POST':
+        #cname = session['Cname']
+
+        Cname = request.form['Cname']
+        Ptype = request.form['Ptype']
+        Pname = request.form['Pname']
+        color = request.form['color']
+        price = request.form['price']
+        Uvideo = request.form['Uvideo']
+        spec = request.form['spec']
+
+        file = request.files['file']
+        file.save("static/upload/" + secure_filename(file.filename))
+
+
+        conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO protb VALUES ('','"+ Cname +"','" + Ptype + "','" + Pname + "','" + color + "','" + price  + "','" + Uvideo + "','" + spec + "','" + file.filename + "')")
+        conn.commit()
+        conn.close()
+        alert = 'Product register successfully'
+
+    return render_template('goback.html',data=alert )
+
+
+
+
+@app.route("/newproduct", methods=['GET', 'POST'])
+def newproduct():
+    if request.method == 'POST':
+        if request.form["submit"] == "Submit":
+            Cname = request.form['Cname']
+            Ptype = request.form['Ptype']
+            Pname = request.form['Pname']
+            color = request.form['color']
+            price = request.form['price']
+            Uvideo = request.form['Uvideo']
+            spec = request.form['spec']
+
+            file = request.files['file']
+            file.save("static/upload/" + file.filename)
+
+            conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO protb VALUES ('','" + Cname + "','" + Ptype + "','" + Pname + "','" + color + "','" + price + "','" + Uvideo + "','" + spec + "','" + file.filename + "')")
+            conn.commit()
+            conn.close()
+            alert = 'Product register successfully'
+            return render_template('goback.html', data=alert)
+
+        elif request.form["submit"] == "Update":
+
+            Pid = request.form['Pid']
+            Cname = request.form['Cname']
+            Ptype = request.form['Ptype']
+            Pname = request.form['Pname']
+            color = request.form['color']
+            price = request.form['price']
+            Uvideo = request.form['Uvideo']
+            spec = request.form['spec']
+
+
+
+            conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+            cursor = conn.cursor()
+            cursor.execute(
+                "update  protb set CompanyName ='" + Cname + "',ProductType='" + Ptype + "',ProductName='" + Pname + "',Color='" + color + "',Price='" + price + "',VideoUrl='" + Uvideo + "',Specifications='" + spec + "' where id='"+Pid+"' ")
+            conn.commit()
+            conn.close()
+            alert = 'Record Updated!'
+            return render_template('goback.html', data=alert)
+
+        elif request.form["submit"] == "Search":
+            Pid = request.form['Pid']
+
+            conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+            # cursor = conn.cursor()
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM protb where id='"+ Pid +"' ")
+            data = cur.fetchone()
+
+            if data:
+                pid=data[0]
+                Cname = data[1]
+                Ptype = data[2]
+                Pname = data[3]
+                color = data[4]
+                price = data[5]
+                Uvideo = data[6]
+                spec = data[7]
+
+                conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+                # cursor = conn.cursor()
+                cur = conn.cursor()
+                cur.execute("SELECT * FROM protb ")
+                data = cur.fetchall()
+
+                return render_template('Newproduct.html', Pid=pid,Cname=Cname,Ptype=Ptype,Pname=Pname,color=color,price=price,Uvideo=Uvideo,spec=spec)
+
+            else:
+                return 'Incorrect username / password !'
+ 

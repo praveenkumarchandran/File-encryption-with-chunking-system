@@ -1,0 +1,9 @@
+      gender = request.form['radiobutton']
+
+        uname = request.form['uname']
+        passwo = request.form['pass']
+
+        conn = mysql.connector.connect(user='root', password='', host='localhost', database='1sampledb')
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO regtb V

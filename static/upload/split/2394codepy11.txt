@@ -1,0 +1,13 @@
+f NewUser():
+    return render_template('NewUser.html')
+@app.route("/UserLogin")
+def UserLogin():
+    return render_template('UserLogin.html')
+
+@app.route("/reg", methods=['GET', 'POST'])
+def reg():
+    if request.method == 'POST':
+        name = request.form['name']
+
+        Fname = request.form['Fname']
+  

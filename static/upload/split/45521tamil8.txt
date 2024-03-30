@@ -1,0 +1,215 @@
+s:
+            if w not in stop_words:
+                filtered_sentence.append(w)
+
+        print(word_tokens)
+        print(filtered_sentence)
+
+        def listToString(s):
+            # initialize an empty string
+            str1 = " "
+
+            # return string
+            return (str1.join(s))
+
+        # Driver code
+        s = filtered_sentence
+        print(listToString(s))
+        sentence = listToString(s)
+        s11 = listToString(word_tokens)
+        print('---------')
+        print(s11)
+        d = ["careless", "together", "criminal", "corrupt", "depressed", "Overcritical", "Aggressive",
+             "Armchair",
+             "critic", "Cynical", "Impulsive", "Tactless", "Thoughtless", "badmood", "hurtful", "lose",
+             "lousy", "lumpy", "naive", "nasty", "naughty", "negate", "negative", "never", "nobody", "non",
+             "descript", "noxious", "sad", "stupid", "stressful", "upset", "worthless", "zero", "ugly",
+             "undermine",
+             "unfair", "unfavorable", "unhappy", "unhealthy", "not+good"]
+
+        s1 = set(sentence.split())
+        s2 = set(d)
+        s111 = set(s11.split())
+
+        print(s1.intersection(s2))
+        print(len(s1.intersection(s2)))
+        cn = len(s111.intersection(s2))
+        print(cn)
+        feed = []
+
+        feed.append(feedback)
+        sentence1 = feed
+        print(sentence1)
+
+        def check_all(sentence1, ws):
+            return all(w in sentence1 for w in ws)
+
+        for sentences in sentence1:
+            if any(check_all(sentences, word.split('+')) for word in d):
+                print(sentence1)
+                sta = 'negative'
+                break
+            else:
+                print('not fount')
+                sta = "positive"
+                break
+        #print(sta)
+
+
+        if str == 'positive':
+            feedr = 0
+        else:
+            feedr = 1
+
+        if( int(star) > 2) :
+            starr = 1
+        else:
+            starr = 0
+        if( int(emoj) <= 3):
+            emojr = 1
+        else:
+            emojr = 0
+
+        total = int(feedr)+int(starr)+int(emojr)
+
+        if(total > 1):
+            result= 'Postive'
+        else:
+            result ='negative'
+
+        print(result)
+
+
+        em1 = 0
+        em2 = 0
+        em3 = 0
+        em4 = 0
+        em5 = 0
+        em6 = 0
+
+        if( int(emoj) == 6):
+            em1 = 1
+        if( int(emoj) == 5):
+            em2 = 1
+        if (int(emoj) == 4):
+            em3 = 1
+        if (int(emoj) == 3):
+            em4 = 1
+        if (int(emoj) == 2):
+            em5 = 1
+        if (int(emoj) == 1):
+            em6 = 1
+
+
+        print(em1  ,em2 ,em3 ,em4 ,em5 ,em6)
+
+
+
+
+
+
+
+
+        conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+        cursor = conn.cursor()
+        cursor.execute("SELECT  *  FROM  booktb where  Bookingid='" + bookid + "' and Email='"+ email +"' and Mac='"+ str(Mac)  +"'")
+        data = cursor.fetchone()
+        if data:
+            proid = data[2]
+
+            conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+            cursor = conn.cursor()
+            cursor.execute("SELECT  *  FROM  protb where  id='" + proid + "'")
+            data = cursor.fetchone()
+            if data:
+                cname = data[1]
+                ptype = data[2]
+                pname = data[3]
+                price = data[5]
+                img = data[8]
+
+            else:
+                alert = 'No Record Found!'
+
+            conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+            cursor = conn.cursor()
+            cursor.execute("SELECT  *  FROM   reviewtb  where  Bookid='" + bookid + "' and Email='"+ email +"' and MacAddress='"+ str(Mac)  +"'")
+            data = cursor.fetchone()
+            if data:
+
+                alert = 'Already Your  Review Enter This Product'
+
+                return render_template('goback.html', data=alert)
+
+            else:
+
+                print(proid)
+
+
+                conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+                cursor = conn.cursor()
+                cursor.execute(
+                    "INSERT INTO  reviewtb VALUES ('','" + str(proid) + "','" + str(cname) + "','" + str(ptype) + "','" + str(pname) + "','" + str(price) + "','" + str(img) + "','" + str(bookid) + "','" + str(email) + "','" +
+                    str(Mac) + "','" + str(uname) + "','" + str(star) + "','" + str(feedback) + "','" + str(em1) + "','" + str(em2) + "','" + str(em3) + "','" + str(em4) + "','" + str(em5) + "','" + str(em6) + "','" + str(result) + "')")
+                conn.commit()
+                conn.close()
+
+                alert = 'Review Enter Successfully'
+                return render_template('goback.html', data=alert)
+
+
+        else:
+
+            alert='No Record Found'
+
+            return render_template('goback.html', data=alert)
+
+
+
+@app.route("/UBookInfo")
+def UBookInfo():
+    uname = session['uname']
+
+    conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+    # cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM booktb  where UserName='" + uname +"'  ")
+    data = cur.fetchall()
+    return render_template('UBookInfo.html', data=data)
+
+@app.route("/ABookInfo")
+def ABookInfo():
+    uname = session['uname']
+
+    conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+    # cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM booktb  where UserName='" + uname +"'  ")
+    data = cur.fetchall()
+    return render_template('ABookInfo.html', data=data)
+
+@app.route("/UReviewInfo")
+def UReviewInfo():
+    uname = session['uname']
+
+    conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+    # cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT Bookid,ProductId,ProductName,UserName,MacAddress,Rate,Review FROM reviewtb  where UserName='" + uname +"'  ")
+    data = cur.fetchall()
+    return render_template('UReviewInfo.html', data=data)
+
+
+@app.route("/AReviewInfo")
+def AReviewInfo():
+
+
+    conn = mysql.connector.connect(user='root', password='', host='localhost', database='1productrecomdb')
+    # cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT Bookid,ProductId,ProductName,UserName,MacAddress,Rate,Review FROM reviewtb   ")
+    data = cur.fetchall()
+    return render_template('AReviewInfo.html', data=data)
+
+if __name__ == '__main__':
+    app.run(debug=True, use_reloader=True)
